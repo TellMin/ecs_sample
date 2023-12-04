@@ -1,0 +1,6 @@
+@ecs_sample_HostAddress = http://localhost:5254
+
+GET {{ecs_sample_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
