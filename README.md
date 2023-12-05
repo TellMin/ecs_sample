@@ -18,3 +18,11 @@ docker run -it --rm -p 5000:8080 aspnetapp:latest
 ```
 
 https://github.com/dotnet/dotnet-docker/tree/main/samples/aspnetapp
+
+## Github Actions での CI/CD
+
+// TODO 動いたらまとめる
+
+https://zenn.dev/kou_pg_0131/articles/gh-actions-oidc-aws
+
+https://zenn.dev/kou_pg_0131/articles/gh-actions-ecr-push-image
