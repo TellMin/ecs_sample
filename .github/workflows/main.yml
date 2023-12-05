@@ -20,7 +20,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }} # GitHub Actions 用の IAM ロールの ARN
 
       # ECR ログイン
-      - uses: aws-actions/amazon-ecr-login@v1
+      - uses: aws-actions/amazon-ecr-login@v2
         id: login-ecr # outputs で参照するために id を設定
 
       # Docker イメージを build・push する
