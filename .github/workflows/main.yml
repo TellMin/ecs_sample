@@ -49,17 +49,11 @@ jobs:
           sed -i 's|\[AWS_ACCOUNT_ID\]|${{ env.AWS_ACCOUNT_ID }}|g' ./deploy/ecs-task-def.json
           sed -i 's|\[IMAGE_ID\]|${{ steps.build-image.outputs.image_id }}|g' ./deploy/ecs-task-def.json
 
-      - name: Read ECS task definition file
-        id: read-file
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./deploy/ecs-task-def.json
-
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.read-file.outputs.content }}
+          task-definition: deploy/ecs-task-def.json
           container-name: ecs-sample
           image: ${{ steps.build-image.outputs.image_id }}
 
