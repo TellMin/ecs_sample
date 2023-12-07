@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -27,14 +30,41 @@ jobs:
 
       # Docker イメージを build・push する
       - name: build and push docker image to ecr
+        id: build-image # outputs で参照するために id を設定
         env:
           # ECR レジストリを `aws-actions/amazon-ecr-login` アクションの `outputs.registry` から取得
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           # イメージを push する ECR リポジトリ名
           REPOSITORY: ecs-sample
           # 任意のイメージタグ
-          # 今回は Git のコミットハッシュにしておく
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
         run: |
           docker build . --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
           docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+          # outputs で参照するために `image_id` という名前で出力
+          echo "::set-output name=image_id::${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}"
+
+      - name: Update ECS task definition and ecs-task-def.json with AWS Account ID
+        run: |
+          sed -i 's/\[AWS_ACCOUNT_ID\]/${{ env.AWS_ACCOUNT_ID }}/g' ./deploy/ecs-task-def.json
+          sed -i 's/[IMAGE_ID]/${{ steps.build-image.outputs.image_id }}/g' ecs-task-def.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        env:
+          # Amazon ECS タスク定義の JSON ファイルのパス
+          TASK_DEFINITION_PATH: ./deploy/ecs-task-def.json
+        with:
+          task-definition:
+          container-name: ecs-sample
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ecs-sample-service
+          cluster: ecs-sample-cluster
+          wait-for-service-stability: true
+          force-new-deployment: true
