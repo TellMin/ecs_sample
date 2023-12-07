@@ -56,7 +56,7 @@ jobs:
           # Amazon ECS タスク定義の JSON ファイルのパス
           TASK_DEFINITION_PATH: ./deploy/ecs-task-def.json
         with:
-          task-definition:
+          task-definition: ${{ env.TASK_DEFINITION_PATH }}
           container-name: ecs-sample
           image: ${{ steps.build-image.outputs.image }}
 
