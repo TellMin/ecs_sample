@@ -62,6 +62,6 @@ jobs:
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ecs-sample-service
-          cluster: ecs-sample-cluster
+          cluster: ecs-sample-service
           wait-for-service-stability: true
           force-new-deployment: true
