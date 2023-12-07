@@ -46,8 +46,8 @@ jobs:
 
       - name: Update ECS task definition and ecs-task-def.json with AWS Account ID
         run: |
-          sed -i 's/\[AWS_ACCOUNT_ID\]/${{ env.AWS_ACCOUNT_ID }}/g' ./deploy/ecs-task-def.json
-          sed -i 's/[IMAGE_ID]/${{ steps.build-image.outputs.image_id }}/g' ecs-task-def.json
+          sed -i 's|\[AWS_ACCOUNT_ID\]|${{ env.AWS_ACCOUNT_ID }}|g' ./deploy/ecs-task-def.json
+          sed -i 's|\[IMAGE_ID\]|${{ steps.build-image.outputs.image_id }}|g' ecs-task-def.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
