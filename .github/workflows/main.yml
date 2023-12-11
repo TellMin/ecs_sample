@@ -42,7 +42,7 @@ jobs:
           docker build . --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
           docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
           # outputs で参照するために `image_id` という名前で出力
-          echo "::set-output name=image_id::${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}"
+          echo "image_id=${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
 
       - name: Update ECS task definition and ecs-task-def.json with AWS Account ID
         run: |
